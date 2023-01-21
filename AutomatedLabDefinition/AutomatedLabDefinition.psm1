@@ -1913,6 +1913,8 @@ function Add-LabMachineDefinition
 
         [string]$OperatingSystemVersion,
 
+        [string]$OperatingSystemPlatform,
+
         [Parameter(ParameterSetName = 'Network')]
         [ValidatePattern('^([a-zA-Z0-9])|([ ]){2,244}$')]
         [string]$Network,
@@ -2883,7 +2885,15 @@ function Add-LabMachineDefinition
                 $machine.LinuxPackageGroup = $UbuntuPackage
             }
 
-            if ($OperatingSystemVersion)
+            if($OperatingSystemVersion -and $OperatingSystemPlatform)
+            {
+                $os = Get-LabAvailableOperatingSystem -NoDisplay | Where-Object { $_.OperatingSystemName -eq $OperatingSystem -and $_.Version -eq $OperatingSystemVersion -and $_.Platform -eq $OperatingSystemPlatform }
+            }
+            elseif($OperatingSystemPlatform)
+            {
+                $os = Get-LabAvailableOperatingSystem -NoDisplay | Where-Object { $_.OperatingSystemName -eq $OperatingSystem -and $_.Platform -eq $OperatingSystemPlatform }
+            }
+            elseif ($OperatingSystemVersion) 
             {
                 $os = Get-LabAvailableOperatingSystem -NoDisplay | Where-Object { $_.OperatingSystemName -eq $OperatingSystem -and $_.Version -eq $OperatingSystemVersion }
             }

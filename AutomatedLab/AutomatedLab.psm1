@@ -529,7 +529,12 @@ function Import-Lab
                     {
                         $Path = Join-Path -Path (Get-Lab).Sources.UnattendedXml.Value -ChildPath cloudinit_default.yml
                     }
-                    return (Get-Content -Path $Path)
+		            $content = (Get-Content -Path $Path)
+                    if($this.OperatingSystemType -eq 'Windows' -and $this.OperatingSystem.Platform -eq "x86")
+                    {
+                        $content = $content.Replace('processorArchitecture="amd64"', 'processorArchitecture="x86"')
+                    }
+                    return $content
                 }
             }
         }

@@ -78,15 +78,16 @@ function New-LabBaseImages
             }
         }
 
-        $baseDiskPath = Join-Path -Path $lab.Target.Path -ChildPath "BASE_$($os.OperatingSystemName.Replace(' ', ''))_$($os.Version)_$($lab.Target.ReferenceDiskSizeInGB).vhdx"
+        $platext = if($os.Platform -eq "x86") {"x86_"} else {""} # decorate the name with x86 so it doesn't collide with the normal x64 base
+        $baseDiskPath = Join-Path -Path $lab.Target.Path -ChildPath "BASE_$($os.OperatingSystemName.Replace(' ', ''))_$($os.Version)_$($platext)$($lab.Target.ReferenceDiskSizeInGB).vhdx"        
         $os.BaseDiskPath = $baseDiskPath
 
 
         $hostOsVersion = [System.Environment]::OSVersion.Version
 
-        if ($hostOsVersion -ge [System.Version]'6.3' -and $os.Version -ge [System.Version]'6.2')
+        if ($hostOsVersion -ge [System.Version]'6.3' -and $os.Version -ge [System.Version]'6.2' -and (Get-LabConfigurationItem -Name SupportGen2VMs) -and ($os.MaxHVGeneration -gt 1))
         {
-            Write-PSFMessage -Message "Host OS version is '$($hostOsVersion)' and OS to create disk for is version '$($os.Version)'. So, setting partition style to GPT."
+            Write-PSFMessage -Message "Host OS version is '$($hostOsVersion)' and OS to create disk for is version '$($os.Version)' SupportGen2VMs=True and OS supports v2. So, setting partition style to GPT."
             $partitionStyle = 'GPT'
         }
         else
