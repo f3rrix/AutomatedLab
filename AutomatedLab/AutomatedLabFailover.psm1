@@ -191,7 +191,7 @@ function Install-LabFailoverCluster
         Invoke-LabCommand -ComputerName $firstNode -ActivityName 'Adding nodes' -ScriptBlock {
             Import-Module FailoverClusters -ErrorAction Stop -WarningAction SilentlyContinue
 
-            if (-not (Get-Cluster -Name $clusterName -ErrorAction SilentlyContinue))
+            if (-not (Get-Cluster -Name $clusterName -ErrorAction SilentlyContinue -WarningAction SilentlyContinue))
             {
                 Write-Error "Cluster $clusterName was not deployed"
             }
@@ -208,7 +208,7 @@ function Install-LabFailoverCluster
 
             if ($useDiskWitness)
             {
-                $clusterDisk = Get-ClusterResource -Cluster $clusterName -ErrorAction SilentlyContinue | Where-object -Property ResourceType -eq 'Physical Disk' | Select -First 1
+                $clusterDisk = Get-ClusterResource -Cluster $clusterName -ErrorAction SilentlyContinue -WarningAction SilentlyContinue | Where-object -Property ResourceType -eq 'Physical Disk' | Select -First 1
 
                 if ($clusterDisk)
                 {
